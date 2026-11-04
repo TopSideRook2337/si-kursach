@@ -1,0 +1,73 @@
+{
+  "name": "N6_K2_brute",
+  "depot": [
+    20.0,
+    20.0
+  ],
+  "n_vehicles": 2,
+  "capacity": 14,
+  "speed": 0.5,
+  "horizon": 480.0,
+  "clients": [
+    {
+      "id": 1,
+      "x": 39.3,
+      "y": 1.62,
+      "demand": 2,
+      "urgency": 1,
+      "tw_start": 55.9,
+      "tw_end": 194.4,
+      "service": 10.0
+    },
+    {
+      "id": 2,
+      "x": 4.91,
+      "y": 18.57,
+      "demand": 10,
+      "urgency": 2,
+      "tw_start": 0.0,
+      "tw_end": 53.6,
+      "service": 10.0
+    },
+    {
+      "id": 3,
+      "x": 38.58,
+      "y": 5.55,
+      "demand": 3,
+      "urgency": 1,
+      "tw_start": 60.9,
+      "tw_end": 193.1,
+      "service": 10.0
+    },
+    {
+      "id": 4,
+      "x": 13.02,
+      "y": 7.67,
+      "demand": 2,
+      "urgency": 1,
+      "tw_start": 0.0,
+      "tw_end": 111.5,
+      "service": 10.0
+    },
+    {
+      "id": 5,
+      "x": 12.87,
+      "y": 2.21,
+      "demand": 3,
+      "urgency": 2,
+      "tw_start": 0.0,
+      "tw_end": 84.9,
+      "service": 10.0
+    },
+    {
+      "id": 6,
+      "x": 25.44,
+      "y": 2.74,
+      "demand": 3,
+      "urgency": 1,
+      "tw_start": 0.0,
+      "tw_end": 126.2,
+      "service": 10.0
+    }
+  ]
+}

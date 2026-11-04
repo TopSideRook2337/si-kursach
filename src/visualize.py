@@ -119,13 +119,13 @@ def plot_membership(var, ax=None, value: float | None = None):
     ax.set_xlim(lo, hi)
     ax.set_title(var.title)
     ax.set_ylabel("μ(x)")
-    ax.legend(fontsize=8, loc="center right")
+    ax.legend(fontsize=8, loc="upper left", bbox_to_anchor=(1.01, 1.0))
     return ax
 
 
 def plot_all_memberships(engine, path=None):
     """Все входные и выходная переменные на одном рисунке (сетка 3×2)."""
-    fig, axes = plt.subplots(3, 2, figsize=(10, 9))
+    fig, axes = plt.subplots(3, 2, figsize=(12, 9))
     vars_ = list(engine.inputs.values()) + [engine.output]
     for ax, v in zip(axes.flat, vars_):
         plot_membership(v, ax)

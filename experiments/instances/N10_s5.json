@@ -1,0 +1,113 @@
+{
+  "name": "N10_s5",
+  "depot": [
+    20.0,
+    20.0
+  ],
+  "n_vehicles": 2,
+  "capacity": 33,
+  "speed": 0.5,
+  "horizon": 480.0,
+  "clients": [
+    {
+      "id": 1,
+      "x": 32.2,
+      "y": 32.32,
+      "demand": 10,
+      "urgency": 3,
+      "tw_start": 0.0,
+      "tw_end": 59.4,
+      "service": 10.0
+    },
+    {
+      "id": 2,
+      "x": 20.61,
+      "y": 11.43,
+      "demand": 6,
+      "urgency": 1,
+      "tw_start": 0.0,
+      "tw_end": 166.1,
+      "service": 10.0
+    },
+    {
+      "id": 3,
+      "x": 2.16,
+      "y": 15.33,
+      "demand": 10,
+      "urgency": 3,
+      "tw_start": 0.0,
+      "tw_end": 56.4,
+      "service": 10.0
+    },
+    {
+      "id": 4,
+      "x": 16.34,
+      "y": 1.81,
+      "demand": 3,
+      "urgency": 3,
+      "tw_start": 0.0,
+      "tw_end": 122.0,
+      "service": 10.0
+    },
+    {
+      "id": 5,
+      "x": 1.95,
+      "y": 39.97,
+      "demand": 4,
+      "urgency": 1,
+      "tw_start": 41.7,
+      "tw_end": 220.0,
+      "service": 10.0
+    },
+    {
+      "id": 6,
+      "x": 26.09,
+      "y": 9.38,
+      "demand": 9,
+      "urgency": 2,
+      "tw_start": 155.9,
+      "tw_end": 262.8,
+      "service": 10.0
+    },
+    {
+      "id": 7,
+      "x": 17.4,
+      "y": 38.97,
+      "demand": 2,
+      "urgency": 1,
+      "tw_start": 0.0,
+      "tw_end": 161.5,
+      "service": 10.0
+    },
+    {
+      "id": 8,
+      "x": 35.91,
+      "y": 33.77,
+      "demand": 1,
+      "urgency": 1,
+      "tw_start": 0.0,
+      "tw_end": 96.8,
+      "service": 10.0
+    },
+    {
+      "id": 9,
+      "x": 15.7,
+      "y": 19.72,
+      "demand": 4,
+      "urgency": 1,
+      "tw_start": 85.1,
+      "tw_end": 232.4,
+      "service": 10.0
+    },
+    {
+      "id": 10,
+      "x": 27.07,
+      "y": 2.43,
+      "demand": 7,
+      "urgency": 1,
+      "tw_start": 186.3,
+      "tw_end": 334.7,
+      "service": 10.0
+    }
+  ]
+}

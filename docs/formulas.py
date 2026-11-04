@@ -14,6 +14,7 @@ from xml.sax.saxutils import escape
 def r(text: str, plain: bool = False) -> str:
     """Текстовый фрагмент формулы. plain=True — прямое начертание (имена функций, числа)."""
     sty = '<m:rPr><m:sty m:val="p"/></m:rPr>' if plain else ""
+    text = text.replace(" ", "\u00a0")
     return (f'<m:r>{sty}<w:rPr><w:rFonts w:ascii="Cambria Math" w:hAnsi="Cambria Math"/>'
             f'</w:rPr><m:t xml:space="preserve">{escape(text)}</m:t></m:r>')
 

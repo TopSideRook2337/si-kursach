@@ -544,7 +544,7 @@ class ReportBuilder:
             num, caption, path = args[0], args[1], args[2]
             self.para(f"Листинг {num} – {caption}", align=WD_ALIGN_PARAGRAPH.LEFT, indent=0,
                       keep_next=True, space_before=6)
-            self.code_block(tables.appendix_code(path), 9)
+            self.code_block(tables.appendix_code(path), 8)
             self.para("", spacing=1.0)
         elif cmd == "appfig":
             num, path, width, caption = args
@@ -555,7 +555,7 @@ class ReportBuilder:
             self.para(f"Рисунок {num} – {caption}", align=WD_ALIGN_PARAGRAPH.CENTER, indent=0)
         elif cmd == "include":
             spec = tables.GENERATORS[args[0]](self)
-            self.code_block(spec, 9)
+            self.code_block(spec, 8)
         else:
             raise ValueError(f"Неизвестная директива: {line}")
 

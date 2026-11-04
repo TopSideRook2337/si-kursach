@@ -17,8 +17,8 @@
    "balance_std": 0.1345,
    "quality_mean": 0.2632,
    "quality_std": 0.0203,
-   "time_mean": 0.0046,
-   "time_std": 0.0037
+   "time_mean": 0.0043,
+   "time_std": 0.0036
   },
   {
    "N": 10,
@@ -57,8 +57,8 @@
    "balance_std": 0.0441,
    "quality_mean": 0.7356,
    "quality_std": 0.0545,
-   "time_mean": 0.3374,
-   "time_std": 0.0443
+   "time_mean": 0.3352,
+   "time_std": 0.037
   },
   {
    "N": 10,
@@ -77,8 +77,8 @@
    "balance_std": 0.0167,
    "quality_mean": 0.7798,
    "quality_std": 0.0088,
-   "time_mean": 0.3976,
-   "time_std": 0.0456
+   "time_mean": 0.4156,
+   "time_std": 0.0562
   },
   {
    "N": 20,
@@ -97,8 +97,8 @@
    "balance_std": 0.0621,
    "quality_mean": 0.201,
    "quality_std": 0.0018,
-   "time_mean": 0.0035,
-   "time_std": 0.0005
+   "time_mean": 0.0032,
+   "time_std": 0.0008
   },
   {
    "N": 20,
@@ -118,7 +118,7 @@
    "quality_mean": 0.4711,
    "quality_std": 0.0435,
    "time_mean": 0.0002,
-   "time_std": 0.0
+   "time_std": 0.0001
   },
   {
    "N": 20,
@@ -137,8 +137,8 @@
    "balance_std": 0.0311,
    "quality_mean": 0.6801,
    "quality_std": 0.0522,
-   "time_mean": 0.8495,
-   "time_std": 0.1084
+   "time_mean": 0.7399,
+   "time_std": 0.1299
   },
   {
    "N": 20,
@@ -157,8 +157,8 @@
    "balance_std": 0.0329,
    "quality_mean": 0.6842,
    "quality_std": 0.0772,
-   "time_mean": 0.9883,
-   "time_std": 0.0839
+   "time_mean": 0.9908,
+   "time_std": 0.1662
   },
   {
    "N": 30,
@@ -177,8 +177,8 @@
    "balance_std": 0.0765,
    "quality_mean": 0.2031,
    "quality_std": 0.0009,
-   "time_mean": 0.0034,
-   "time_std": 0.0004
+   "time_mean": 0.0036,
+   "time_std": 0.001
   },
   {
    "N": 30,
@@ -198,7 +198,7 @@
    "quality_mean": 0.4279,
    "quality_std": 0.0526,
    "time_mean": 0.0003,
-   "time_std": 0.0
+   "time_std": 0.0001
   },
   {
    "N": 30,
@@ -217,8 +217,8 @@
    "balance_std": 0.0336,
    "quality_mean": 0.7123,
    "quality_std": 0.0459,
-   "time_mean": 1.0928,
-   "time_std": 0.1489
+   "time_mean": 1.0802,
+   "time_std": 0.1011
   },
   {
    "N": 30,
@@ -237,8 +237,8 @@
    "balance_std": 0.0163,
    "quality_mean": 0.7195,
    "quality_std": 0.0367,
-   "time_mean": 1.3597,
-   "time_std": 0.0735
+   "time_mean": 1.4511,
+   "time_std": 0.1505
   },
   {
    "N": 50,
@@ -257,8 +257,8 @@
    "balance_std": 0.0535,
    "quality_mean": 0.2044,
    "quality_std": 0.0005,
-   "time_mean": 0.0049,
-   "time_std": 0.0015
+   "time_mean": 0.0034,
+   "time_std": 0.0003
   },
   {
    "N": 50,
@@ -277,8 +277,8 @@
    "balance_std": 0.0579,
    "quality_mean": 0.4384,
    "quality_std": 0.0703,
-   "time_mean": 0.0004,
-   "time_std": 0.0001
+   "time_mean": 0.0003,
+   "time_std": 0.0
   },
   {
    "N": 50,
@@ -297,8 +297,8 @@
    "balance_std": 0.0323,
    "quality_mean": 0.6713,
    "quality_std": 0.0269,
-   "time_mean": 2.1988,
-   "time_std": 0.1207
+   "time_mean": 2.2468,
+   "time_std": 0.1261
   },
   {
    "N": 50,
@@ -317,8 +317,8 @@
    "balance_std": 0.0386,
    "quality_mean": 0.6833,
    "quality_std": 0.044,
-   "time_mean": 2.8083,
-   "time_std": 0.1827
+   "time_mean": 2.5986,
+   "time_std": 0.3746
   }
  ],
  "brute": [
@@ -334,7 +334,7 @@
    "ga_hit_rate": 1.0,
    "ga_within_2pct": 1.0,
    "ga_gap_pct": 0.0,
-   "ga_time": 0.236,
+   "ga_time": 0.271,
    "ga_evals": 297
   },
   {
@@ -343,13 +343,13 @@
    "solutions": 2520,
    "space_chromosomes": 5040,
    "opt_fitness": 0.672,
-   "brute_time": 0.17,
+   "brute_time": 0.19,
    "ga_mean": 0.672,
    "ga_min": 0.672,
    "ga_hit_rate": 1.0,
    "ga_within_2pct": 1.0,
    "ga_gap_pct": 0.0,
-   "ga_time": 0.313,
+   "ga_time": 0.265,
    "ga_evals": 651
   },
   {
@@ -358,13 +358,13 @@
    "solutions": 20160,
    "space_chromosomes": 40320,
    "opt_fitness": 0.7692,
-   "brute_time": 1.37,
+   "brute_time": 1.17,
    "ga_mean": 0.7508,
    "ga_min": 0.6939,
    "ga_hit_rate": 0.6,
    "ga_within_2pct": 0.6,
    "ga_gap_pct": 2.393,
-   "ga_time": 0.33,
+   "ga_time": 0.354,
    "ga_evals": 818
   },
   {
@@ -373,13 +373,13 @@
    "solutions": 181440,
    "space_chromosomes": 362880,
    "opt_fitness": 0.7049,
-   "brute_time": 10.79,
+   "brute_time": 10.54,
    "ga_mean": 0.6924,
    "ga_min": 0.6145,
    "ga_hit_rate": 0.8,
    "ga_within_2pct": 0.8,
    "ga_gap_pct": 1.779,
-   "ga_time": 0.393,
+   "ga_time": 0.415,
    "ga_evals": 1223
   }
  ],
@@ -391,7 +391,7 @@
    "fitness_std": 0.0681,
    "fitness_min": 0.5158,
    "fitness_max": 0.7227,
-   "time_mean": 0.27,
+   "time_mean": 0.24,
    "evals_mean": 1343
   },
   {
@@ -401,7 +401,7 @@
    "fitness_std": 0.0633,
    "fitness_min": 0.5555,
    "fitness_max": 0.7529,
-   "time_mean": 0.67,
+   "time_mean": 0.61,
    "evals_mean": 3666
   },
   {
@@ -411,7 +411,7 @@
    "fitness_std": 0.0391,
    "fitness_min": 0.6711,
    "fitness_max": 0.7724,
-   "time_mean": 1.46,
+   "time_mean": 1.4,
    "evals_mean": 8507
   },
   {
@@ -421,7 +421,7 @@
    "fitness_std": 0.0536,
    "fitness_min": 0.6225,
    "fitness_max": 0.7754,
-   "time_mean": 3.01,
+   "time_mean": 2.87,
    "evals_mean": 20449
   },
   {
@@ -431,7 +431,7 @@
    "fitness_std": 0.0522,
    "fitness_min": 0.4469,
    "fitness_max": 0.5831,
-   "time_mean": 0.77,
+   "time_mean": 0.68,
    "evals_mean": 1972
   },
   {
@@ -441,7 +441,7 @@
    "fitness_std": 0.0605,
    "fitness_min": 0.5853,
    "fitness_max": 0.7713,
-   "time_mean": 0.85,
+   "time_mean": 0.88,
    "evals_mean": 3616
   },
   {
@@ -471,7 +471,7 @@
    "fitness_std": 0.0539,
    "fitness_min": 0.5935,
    "fitness_max": 0.7781,
-   "time_mean": 1.64,
+   "time_mean": 1.77,
    "evals_mean": 12607
   },
   {
@@ -481,7 +481,7 @@
    "fitness_std": 0.0391,
    "fitness_min": 0.6711,
    "fitness_max": 0.7724,
-   "time_mean": 1.24,
+   "time_mean": 1.37,
    "evals_mean": 8507
   },
   {
@@ -491,7 +491,7 @@
    "fitness_std": 0.0529,
    "fitness_min": 0.4708,
    "fitness_max": 0.6307,
-   "time_mean": 3.01,
+   "time_mean": 3.08,
    "evals_mean": 25474
   },
   {
@@ -501,7 +501,7 @@
    "fitness_std": 0.0581,
    "fitness_min": 0.3769,
    "fitness_max": 0.5688,
-   "time_mean": 2.92,
+   "time_mean": 3.15,
    "evals_mean": 26072
   }
  ],
@@ -510,7 +510,7 @@
   "best": 0.7724274488908818,
   "initial_best": 0.3417317972125345,
   "evaluations": 7697,
-  "time": 1.413618065999799,
+  "time": 1.364596851999977,
   "best_at_50": 0.5532987538466871,
   "best_at_100": 0.5763468984369727
  },
@@ -563,5 +563,5 @@
    "ref_distance": 304.427624460217
   }
  },
- "total_time": 85.27202183899999
+ "total_time": 86.1247782270002
 }

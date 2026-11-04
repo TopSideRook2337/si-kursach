@@ -42,7 +42,8 @@ def encode(routes: list[list[int]], n_clients: int) -> list[int]:
     return chrom
 
 
-def random_chromosome(n_clients: int, n_vehicles: int, rng: np.random.Generator) -> list[int]:
+def random_chromosome(n_clients: int, n_vehicles: int,
+                      rng: np.random.Generator) -> list[int]:
     """Случайная хромосома: случайная перестановка клиентов и разделителей."""
     genes = np.arange(1, n_clients + n_vehicles)
     rng.shuffle(genes)

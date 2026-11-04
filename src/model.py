@@ -205,7 +205,8 @@ def simulate_route(route: list[int], inst: Instance) -> RouteStats:
         leg = float(d[prev, 0])
         dist += leg
         t += leg / inst.speed
-    return RouteStats(list(route), float(dist), load, t if route else 0.0, late, n_late, arrivals)
+    return RouteStats(list(route), float(dist), load, t if route else 0.0, late, n_late,
+                      arrivals)
 
 
 def evaluate_routes(routes: list[list[int]], inst: Instance) -> SolutionMetrics:

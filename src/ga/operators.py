@@ -48,7 +48,8 @@ SELECTION = {
 
 
 # ================================================================== СКРЕЩИВАНИЕ
-def order_crossover(p1: list[int], p2: list[int], rng: np.random.Generator) -> list[int]:
+def order_crossover(p1: list[int], p2: list[int],
+                    rng: np.random.Generator) -> list[int]:
     """Упорядоченное скрещивание (Order Crossover, OX).
 
     1. Случайно выбирается отрезок [i, j) и копируется из первого родителя
@@ -83,7 +84,8 @@ def swap_mutation(chrom: list[int], rng: np.random.Generator, n_clients: int) ->
     return c
 
 
-def inversion_mutation(chrom: list[int], rng: np.random.Generator, n_clients: int) -> list[int]:
+def inversion_mutation(chrom: list[int], rng: np.random.Generator,
+                       n_clients: int) -> list[int]:
     """Инверсия случайного отрезка: порядок генов на нём меняется на обратный.
 
     Если отрезок лежит внутри одного маршрута, это аналог хода 2-opt —
@@ -95,7 +97,8 @@ def inversion_mutation(chrom: list[int], rng: np.random.Generator, n_clients: in
     return c
 
 
-def transfer_mutation(chrom: list[int], rng: np.random.Generator, n_clients: int) -> list[int]:
+def transfer_mutation(chrom: list[int], rng: np.random.Generator,
+                      n_clients: int) -> list[int]:
     """Перенос клиента в другой маршрут: случайный клиент удаляется из своего
     маршрута и вставляется в случайную позицию другого маршрута.
 

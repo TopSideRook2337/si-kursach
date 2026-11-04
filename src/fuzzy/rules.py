@@ -74,7 +74,8 @@ RULES: list[Rule] = [
       "Опоздания вместе с поздней доставкой срочных заказов — худший сервис."),
     # --- 16–18. Загрузка транспорта ---
     R({"load": "over"}, "very_low", 1.0,
-      "Перегруз машины физически недопустим (дополнительно штрафуется вне нечёткого блока)."),
+      "Перегруз машины физически недопустим (дополнительно штрафуется вне "
+      "нечёткого блока)."),
     R({"load": "normal", "length": "short", "timewin": "good"}, "very_high", 0.8,
       "Рациональная загрузка кузова при коротком пробеге и без опозданий."),
     R({"load": "low", "length": "long"}, "low", 0.8,
@@ -89,7 +90,8 @@ RULES: list[Rule] = [
     R({"balance": "uneven", "timewin": "fair"}, "low", 0.7,
       "Перегруженный водитель опаздывает, пока другие простаивают."),
     R({"balance": "uneven", "length": "medium"}, "low", 0.6,
-      "Неравномерная нагрузка при среднем пробеге — признак неудачного распределения заказов."),
+      "Неравномерная нагрузка при среднем пробеге — признак неудачного "
+      "распределения заказов."),
     # --- 24–26. Комбинированные правила ---
     R({"length": "short", "urgency": "good", "balance": "even"}, "very_high", 0.9,
       "Экономичный план с приоритетом срочных заказов и равной нагрузкой водителей."),
@@ -103,6 +105,7 @@ RULES: list[Rule] = [
 def rule_to_text(rule: Rule, variables: dict, output) -> str:
     """Текстовая запись правила: «ЕСЛИ Протяжённость = короткая И … ТО Качество = …»."""
     conds = " И ".join(
-        f"{variables[v].title} = «{variables[v].terms[t].label}»" for v, t in rule.conditions)
+        f"{variables[v].title} = «{variables[v].terms[t].label}»"
+        for v, t in rule.conditions)
     return f"ЕСЛИ {conds} ТО {output.title} = «{output.terms[rule.conclusion].label}» " \
            f"(F = {rule.weight:g})"

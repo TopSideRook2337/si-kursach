@@ -173,7 +173,7 @@ def gen_fired(b):
                      r["conclusion"]])
     return {"header": ["Правило", "Подусловия и их степени истинности b",
                        "c = min b", "F", "d = c·F", "Заключение (терм «Качества»)"],
-            "rows": rows, "widths": [1.4, 7.0, 1.6, 1.0, 1.6, 3.0], "font": 10,
+            "rows": rows, "widths": [1.7, 6.8, 1.6, 1.0, 1.6, 3.0], "font": 10,
             "align": "clcccl"}
 
 
@@ -243,7 +243,10 @@ def gen_instance_json(b):
              '  "clients": [']
     for i, c in enumerate(d["clients"]):
         comma = "," if i < len(d["clients"]) - 1 else ""
-        lines.append("    " + json.dumps(c, ensure_ascii=False) + comma)
+        a = {k: c[k] for k in ("id", "x", "y", "demand", "urgency")}
+        b_ = {k: c[k] for k in ("tw_start", "tw_end", "service")}
+        lines.append("    " + json.dumps(a, ensure_ascii=False)[:-1] + ",")
+        lines.append("     " + json.dumps(b_, ensure_ascii=False)[1:] + comma)
     lines += ["  ]", "}"]
     return "\n".join(lines)
 
@@ -254,9 +257,9 @@ def gen_cli_output(b):
     # длинные строки правил переносим
     res = []
     for line in out.splitlines():
-        while len(line) > 92:
-            cut = line.rfind(" ", 0, 92)
-            cut = cut if cut > 40 else 92
+        while len(line) > 94:
+            cut = line.rfind(" ", 0, 94)
+            cut = cut if cut > 40 else 94
             res.append(line[:cut])
             line = "        " + line[cut:].lstrip()
         res.append(line)

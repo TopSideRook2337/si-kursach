@@ -33,7 +33,7 @@ class GAConfig:
     tournament_k: int = 3
     elite: int = 2
     seed_fraction: float = 0.1     # доля начальной популяции из рандомизированной эвристики
-    stagnation: int = 120          # останов, если лучшая особь не улучшалась столько поколений
+    stagnation: int = 120          # останов, если нет улучшения столько поколений
     time_limit: float | None = None
     seed: int = 0
 
@@ -54,7 +54,8 @@ class GAResult:
     stop_reason: str = ""
 
 
-def run_ga(inst: Instance, fitness: Callable[[list[int]], float], cfg: GAConfig | None = None,
+def run_ga(inst: Instance, fitness: Callable[[list[int]], float],
+           cfg: GAConfig | None = None,
            callback: Callable[[int, float, float, list[int]], bool | None] | None = None
            ) -> GAResult:
     """Запускает ГА на задаче ``inst`` с функцией приспособленности ``fitness``.

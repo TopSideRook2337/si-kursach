@@ -68,20 +68,21 @@ class MamdaniInference:
         """Этап 3. Агрегирование подусловий: степень истинности условия
         правила равна минимуму степеней истинности его подусловий (нечёткое «И»)."""
         # c_j = min{b_i} по всем подусловиям (переменная v, терм t) правила j
-        return np.array([min(fuzz[v][t] for v, t in r.conditions) for r in self.rules])
+        return np.array([min(fuzz[v][t] for v, t in r.conditions)
+                         for r in self.rules])
 
     def activate(self, c: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Этап 4. Активизация: d_j = c_j·F_j; функция принадлежности
         заключения «срезается» на уровне d_j (min-активизация)."""
-        d = c * self._weights                                  # d_j = c_j · F_j
-        # μ'_j(x) = min(d_j, μ_j(x)): строка j — «срезанный» терм заключения правила j
+        d = c * self._weights                        # d_j = c_j · F_j
+        # μ'_j(x) = min(d_j, μ_j(x)): строка j — «срезанный» терм правила j
         activated = np.minimum(d[:, None], self._concl_mf)
         return d, activated
 
     @staticmethod
     def accumulate(activated: np.ndarray) -> np.ndarray:
         """Этап 5. Аккумуляция: объединение (max) всех активизированных множеств."""
-        return activated.max(axis=0)                           # μ_E(x) = max_j μ'_j(x)
+        return activated.max(axis=0)                 # μ_E(x) = max_j μ'_j(x)
 
     def defuzzify(self, mu: np.ndarray) -> float:
         """Этап 6. Дефаззификация методом центра тяжести.
@@ -89,10 +90,11 @@ class MamdaniInference:
         Если ни одно правило не сработало (площадь равна нулю), возвращается
         0 — худшая оценка. При полной базе правил такого не происходит.
         """
-        area = mu.sum()                                        # Σ μ_E(x_g)
+        area = mu.sum()                              # Σ μ_E(x_g)
         if area <= 1e-12:
             return 0.0
-        return float((self.grid * mu).sum() / area)            # Σ x_g·μ_E(x_g) / Σ μ_E(x_g)
+        # центр тяжести: Σ x_g·μ_E(x_g) / Σ μ_E(x_g)
+        return float((self.grid * mu).sum() / area)
 
     # ------------------------------------------------------------- вывод целиком
     def infer(self, values: dict[str, float]) -> float:
@@ -116,4 +118,5 @@ def build_default_engine(resolution: int = 201) -> MamdaniInference:
     """Создаёт систему вывода с переменными и базой правил по умолчанию."""
     from src.fuzzy.rules import RULES
     from src.fuzzy.variables import make_input_variables, make_output_variable
-    return MamdaniInference(make_input_variables(), make_output_variable(), RULES, resolution)
+    return MamdaniInference(make_input_variables(), make_output_variable(), RULES,
+                            resolution)

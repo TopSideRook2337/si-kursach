@@ -21,8 +21,14 @@ python -m src.main --clients 30 --seed 1 --trace --plot routes.png   # конс�
 python -m src.gui                                                    # окно программы
 python experiments/run_experiments.py                                 # все эксперименты (~5 мин)
 python -m pytest                                                     # тесты
-python docs/build_report.py                                          # сборка записки .docx
+python docs/build_report.py                                          # сборка записки .docx + .pdf
 ```
+
+Готовая записка: `docs/Пояснительная_записка.docx` (и PDF-копия). Для сборки PDF и нумерации
+содержания нужен LibreOffice с модулем Math (`sudo apt install libreoffice-writer libreoffice-math`);
+без него `python docs/build_report.py --no-pdf` соберёт только docx (содержание обновится при
+открытии в Word). Перед сдачей заполните поля `[ФИО]`, `[группа]` и т.п. на титуле и в задании
+и вставьте скриншоты на места заглушек `[СКРИНШОТ: …]` в подразделе 4.7.
 
 Основные параметры CLI: `--clients`, `--vehicles`, `--seed`, `--instance file.json`,
 `--pop`, `--generations`, `--pc`, `--pm`, `--selection {tournament,roulette,rank}`,

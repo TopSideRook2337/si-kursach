@@ -60,43 +60,47 @@ def make_input_variables() -> dict[str, LinguisticVariable]:
 
     Параметры функций принадлежности подобраны по диапазонам значений,
     наблюдаемым на сгенерированных задачах (от случайных решений до
-    решений без опозданий), так, чтобы соседние термы перекрывались.
+    решений без опозданий). Соседние термы образуют разбиение Руспини:
+    склоны соседних термов пересекаются на уровне 0,5, сумма степеней
+    принадлежности равна 1. Поэтому почти любое значение принадлежит
+    сразу двум термам, и оценка качества меняется плавно — у ГА нет
+    «плато», на которых приспособленность не реагирует на улучшения.
     """
     length = LinguisticVariable(
         "length", "Протяжённость", (0.6, 2.6),
         description="суммарный пробег, делённый на пробег жадного решения "
                     "«ближайший сосед» (1,0 — как у жадного алгоритма)")
-    length.add("short", "короткая", TrapezoidalMF(0.6, 0.6, 0.9, 1.05))
-    length.add("medium", "средняя", TriangularMF(0.9, 1.1, 1.4))
-    length.add("long", "длинная", TrapezoidalMF(1.2, 2.0, 2.6, 2.6))
+    length.add("short", "короткая", TrapezoidalMF(0.6, 0.6, 0.8, 1.1))
+    length.add("medium", "средняя", TriangularMF(0.8, 1.1, 1.6))
+    length.add("long", "длинная", TrapezoidalMF(1.1, 1.6, 2.6, 2.6))
 
     load = LinguisticVariable(
         "load", "Загрузка транспорта", (0.0, 2.0),
         description="максимальная загрузка машины в долях от вместимости")
-    load.add("low", "низкая", TrapezoidalMF(0.0, 0.0, 0.5, 0.75))
-    load.add("normal", "нормальная", TrapezoidalMF(0.6, 0.8, 1.0, 1.05))
-    load.add("over", "перегрузка", TrapezoidalMF(1.0, 1.3, 2.0, 2.0))
+    load.add("low", "низкая", TrapezoidalMF(0.0, 0.0, 0.5, 0.8))
+    load.add("normal", "нормальная", TrapezoidalMF(0.5, 0.8, 1.0, 1.1))
+    load.add("over", "перегрузка", TrapezoidalMF(1.0, 1.1, 2.0, 2.0))
 
     tw = LinguisticVariable(
         "timewin", "Соблюдение временных окон", (0.0, 1.0),
         description="средняя по клиентам величина min(1, опоздание / 60 мин)")
-    tw.add("good", "хорошее", TrapezoidalMF(0.0, 0.0, 0.02, 0.08))
-    tw.add("fair", "удовлетворительное", TriangularMF(0.03, 0.12, 0.25))
-    tw.add("poor", "плохое", TrapezoidalMF(0.15, 0.45, 1.0, 1.0))
+    tw.add("good", "хорошее", TriangularMF(0.0, 0.0, 0.12))
+    tw.add("fair", "удовлетворительное", TriangularMF(0.0, 0.12, 0.45))
+    tw.add("poor", "плохое", TrapezoidalMF(0.12, 0.45, 1.0, 1.0))
 
     urg = LinguisticVariable(
         "urgency", "Обслуживание срочных заказов", (0.0, 1.0),
         description="средневзвешенное по срочности время начала обслуживания "
                     "срочных клиентов, делённое на длительность смены")
-    urg.add("good", "хорошее", TrapezoidalMF(0.0, 0.0, 0.12, 0.25))
-    urg.add("medium", "среднее", TriangularMF(0.15, 0.3, 0.45))
-    urg.add("poor", "плохое", TrapezoidalMF(0.35, 0.6, 1.0, 1.0))
+    urg.add("good", "хорошее", TrapezoidalMF(0.0, 0.0, 0.05, 0.25))
+    urg.add("medium", "среднее", TriangularMF(0.05, 0.25, 0.5))
+    urg.add("poor", "плохое", TrapezoidalMF(0.25, 0.5, 1.0, 1.0))
 
     bal = LinguisticVariable(
         "balance", "Сбалансированность", (0.0, 1.5),
         description="коэффициент вариации длительностей маршрутов машин")
-    bal.add("even", "равномерная", TrapezoidalMF(0.0, 0.0, 0.15, 0.35))
-    bal.add("uneven", "неравномерная", TrapezoidalMF(0.2, 0.5, 1.5, 1.5))
+    bal.add("even", "равномерная", TrapezoidalMF(0.0, 0.0, 0.05, 0.4))
+    bal.add("uneven", "неравномерная", TrapezoidalMF(0.05, 0.4, 1.5, 1.5))
 
     return {v.name: v for v in (length, load, tw, urg, bal)}
 

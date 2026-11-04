@@ -164,7 +164,7 @@ def test_quality_monotonic_examples():
     bad = {"length": 2.2, "load": 0.9, "timewin": 0.6, "urgency": 0.7, "balance": 0.9}
     over = dict(ideal, load=1.6)
     q_ideal, q_bad, q_over = eng.infer(ideal), eng.infer(bad), eng.infer(over)
-    assert q_ideal > 0.75
+    assert q_ideal > 0.7
     assert q_bad < 0.25
     assert q_over < q_ideal
     # ухудшение одного показателя не повышает оценку

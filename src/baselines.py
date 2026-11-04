@@ -58,6 +58,34 @@ def nearest_neighbor(inst: Instance) -> list[list[int]]:
     return routes
 
 
+def randomized_nearest_neighbor(inst: Instance, rng: np.random.Generator,
+                                rcl: int = 3) -> list[list[int]]:
+    """Рандомизированный «ближайший сосед» (используется для «засева»
+    части начальной популяции ГА): следующий клиент выбирается случайно
+    среди ``rcl`` ближайших подходящих по вместимости. Даёт разнообразные
+    решения приемлемого качества."""
+    d = inst.dist
+    unvisited = set(range(1, inst.n_clients + 1))
+    routes: list[list[int]] = []
+    for _ in range(inst.n_vehicles):
+        route, load, cur = [], 0, 0
+        while True:
+            cand = [c for c in unvisited if load + inst.clients[c - 1].demand <= inst.capacity]
+            if not cand:
+                break
+            cand.sort(key=lambda c: d[cur, c])
+            nxt = cand[int(rng.integers(min(rcl, len(cand))))]
+            route.append(nxt)
+            load += inst.clients[nxt - 1].demand
+            unvisited.remove(nxt)
+            cur = nxt
+        routes.append(route)
+    for c in sorted(unvisited):
+        loads = [sum(inst.clients[x - 1].demand for x in r) for r in routes]
+        routes[int(np.argmin(loads))].append(c)
+    return routes
+
+
 def _canonical(routes: list[list[int]]) -> bool:
     """Проверка канонической формы: непустые маршруты упорядочены по первому
     клиенту, пустые — в конце. Машины одинаковы, поэтому перестановки

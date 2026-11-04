@@ -383,12 +383,13 @@ class ReportBuilder:
                 c.width = Cm(widths[j] * scale)
                 p = c.paragraphs[0]
                 p.paragraph_format.first_line_indent = Cm(0)
-                p.paragraph_format.line_spacing = 1.5
-                p.alignment = WD_ALIGN_PARAGRAPH.LEFT if j == 0 else WD_ALIGN_PARAGRAPH.JUSTIFY
+                p.paragraph_format.line_spacing = 1.0
+                p.paragraph_format.space_after = Pt(5)
+                p.alignment = WD_ALIGN_PARAGRAPH.LEFT
                 self.inline(p, ("" if j == 0 else "– ") + val)
         set_col_widths(tb, [w * scale for w in widths])
 
-    def listing(self, label, caption, code: str, size=10):
+    def listing(self, label, caption, code: str, size=9):
         n = self.labels[f"lst:{label}"]
         self.para(f"Листинг {n} – {caption}", align=WD_ALIGN_PARAGRAPH.LEFT, indent=0,
                   keep_next=True, space_before=6)
@@ -545,6 +546,13 @@ class ReportBuilder:
                       keep_next=True, space_before=6)
             self.code_block(tables.appendix_code(path), 9)
             self.para("", spacing=1.0)
+        elif cmd == "appfig":
+            num, path, width, caption = args
+            self.counters["appfig"] = self.counters.get("appfig", 0) + 1
+            p = self.para(align=WD_ALIGN_PARAGRAPH.CENTER, indent=0, keep_next=True,
+                          spacing=1.0, space_before=6)
+            p.add_run().add_picture(str(ROOT / path), width=Cm(float(width)))
+            self.para(f"Рисунок {num} – {caption}", align=WD_ALIGN_PARAGRAPH.CENTER, indent=0)
         elif cmd == "include":
             spec = tables.GENERATORS[args[0]](self)
             self.code_block(spec, 9)
@@ -659,7 +667,8 @@ class ReportBuilder:
             pf.first_line_indent = Cm(0)
             pf.left_indent = Cm(0.5 * (level - 1))
             pf.alignment = WD_ALIGN_PARAGRAPH.LEFT
-            pf.line_spacing = 1.5
+            pf.line_spacing = 1.0
+            pf.space_after = Pt(0)
             pf.tab_stops.add_tab_stop(Cm(TEXT_WIDTH_CM), WD_TAB_ALIGNMENT.RIGHT,
                                       WD_TAB_LEADER.DOTS)
             if first:
@@ -769,20 +778,23 @@ def norm(s: str) -> str:
 
 
 def find_heading_pages(pages: list[str], headings: list[tuple[int, str]]) -> dict:
-    """Номера страниц заголовков: последовательный поиск по тексту PDF."""
+    """Номера страниц заголовков: последовательный поиск строк-заголовков в PDF.
+
+    Строка PDF считается заголовком, если она совпадает с текстом заголовка
+    или является его началом (заголовок перенесён на следующую строку)."""
     result = {}
-    texts = [norm(p) for p in pages]
-    # поиск начинается после страницы с содержанием
-    start = next(i for i, t in enumerate(texts) if "содержание" in t[:200]) + 1
-    while start < len(texts) and "введение" not in texts[start][:400]:
+    page_lines = [[norm(x) for x in p.splitlines() if x.strip()] for p in pages]
+    start = next(i for i, ls in enumerate(page_lines) if "содержание" in ls) + 1
+    while start < len(page_lines) and "введение" not in page_lines[start]:
         start += 1
     cur = start
     for level, h in headings:
-        key = norm(h)[:45]
+        target = norm(h)
         if h.startswith("Приложение"):
-            key = norm("приложение " + h.split()[1])
-        for p in range(cur, len(texts)):
-            if key in texts[p]:
+            target = norm("приложение " + h.split()[1])
+        for p in range(cur, len(page_lines)):
+            if any(ln == target or (len(ln) >= 12 and target.startswith(ln))
+                   for ln in page_lines[p]):
                 result[(level, h)] = p + 1
                 cur = p
                 break
@@ -796,7 +808,8 @@ def count_stats(builder: ReportBuilder, pages: list[str], toc_pages: dict) -> di
     app_pages = [v for (lvl, h), v in toc_pages.items() if h.startswith("Приложение")]
     body = (min(app_pages) - 1) if app_pages else n_pages
     n_apps = sum(1 for _, h in builder.headings if h.startswith("Приложение"))
-    return {"pages": n_pages, "body_pages": body, "figs": builder.counters["fig"],
+    return {"pages": n_pages, "body_pages": body,
+            "figs": builder.counters["fig"] + builder.counters.get("appfig", 0),
             "tables": builder.counters["tab"], "sources": len(builder.cited),
             "apps": n_apps}
 

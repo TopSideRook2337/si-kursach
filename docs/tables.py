@@ -86,6 +86,13 @@ def load_values() -> dict:
         v[f"tr_{k}"] = f(val, 3)
     v["total_time"] = f(s["total_time"], 0)
     fz = tr["fuzzified"]
+    lv = tr["levels"]
+    for key, name in [("vh", "очень высокое"), ("h", "высокое"), ("m", "среднее"),
+                      ("l", "низкое"), ("vl", "очень низкое")]:
+        v[f"lv_{key}"] = f(lv.get(name, 0.0), 3)
+    v["tr_tw_good"] = f(fz["timewin"]["good"], 3)
+    v["tr_urg_good"] = f(fz["urgency"]["good"], 3)
+    v["tr_bal_even"] = f(fz["balance"]["even"], 3)
     v["tr_short"] = f(fz["length"]["short"], 3)
     v["tr_medium"] = f(fz["length"]["medium"], 3)
     v["tr_urg_medium"] = f(fz["urgency"]["medium"], 3)
@@ -156,7 +163,7 @@ def gen_fuzzification(b):
 def gen_fired(b):
     rows = []
     for r in read_csv("exp7_rules_fired.csv"):
-        if float(r["d"]) <= 0:
+        if float(r["d"]) < 0.01:
             continue
         conds = r["conditions"].replace("Протяжённость", "L").replace(
             "Загрузка транспорта", "З").replace("Соблюдение временных окон", "T").replace(
@@ -185,11 +192,12 @@ def gen_rules(b):
     eng = build_default_engine()
     rows = []
     for j, r in enumerate(eng.rules, 1):
-        text = rule_to_text(r, eng.inputs, eng.output)
-        text = text.rsplit(" (F", 1)[0]
+        sym = {"length": "L", "load": "З", "timewin": "T", "urgency": "U", "balance": "B"}
+        conds = " И ".join(f"{sym[v]} = {eng.inputs[v].terms[t].label}" for v, t in r.conditions)
+        text = f"ЕСЛИ {conds} ТО Q = {eng.output.terms[r.conclusion].label}"
         rows.append([str(j), text, f(r.weight, 1), r.explanation])
     return {"header": ["№", "Правило", "F", "Пояснение"], "rows": rows,
-            "widths": [0.8, 8.2, 0.9, 6.6], "font": 10, "align": "clcl"}
+            "widths": [0.8, 7.0, 0.9, 7.8], "font": 9, "align": "clcl"}
 
 
 def gen_variables(b):

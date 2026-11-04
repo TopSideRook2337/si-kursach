@@ -114,7 +114,7 @@ def exp_compare(pool, sizes, seeds):
     write_csv(RES / "exp1_compare.csv", agg)
 
     # графики: пробег, опоздания, нечёткая оценка
-    fig, axes = plt.subplots(1, 3, figsize=(14, 4.2))
+    fig, axes = plt.subplots(1, 3, figsize=(10.5, 3.9))
     width = 0.2
     x = np.arange(len(sizes))
     for ax, (key, title) in zip(axes, [("distance", "Суммарный пробег, км"),
@@ -130,7 +130,7 @@ def exp_compare(pool, sizes, seeds):
         ax.set_xticks(x, [f"N = {n}" for n in sizes])
         ax.set_title(title)
         ax.grid(axis="x", visible=False)
-    axes[0].legend(fontsize=8)
+    axes[0].legend(fontsize=7.5)
     fig.tight_layout()
     fig.savefig(RES / "exp1_compare.png")
     plt.close(fig)
@@ -175,7 +175,7 @@ def exp_convergence_and_maps(n=30, seed=1):
     ff = FuzzyFitness(inst)
     res = run_ga(inst, ff, GAConfig(generations=gens_for(n), stagnation=10 ** 9, seed=seed))
 
-    fig, ax = plt.subplots(figsize=(7, 4))
+    fig, ax = plt.subplots(figsize=(6.4, 3.6))
     plot_convergence(res.history_best, res.history_mean, ax,
                      title=f"Сходимость ГА (N = {n}, популяция 100)")
     ax.set_ylim(-1.0, 1.0)
@@ -195,10 +195,11 @@ def exp_convergence_and_maps(n=30, seed=1):
     fig.savefig(RES / "exp3_convergence_seeds.png")
     plt.close(fig)
 
-    fig, axes = plt.subplots(1, 3, figsize=(19, 6))
-    plot_routes(inst, res.initial_best_routes, axes[0], title="Лучшая особь начального поколения")
-    plot_routes(inst, nearest_neighbor(inst), axes[1], title="Жадный алгоритм «ближайший сосед»")
-    plot_routes(inst, res.best_routes, axes[2], title="Итоговое решение ГА + нечёткая оценка")
+    fig, axes = plt.subplots(1, 2, figsize=(10, 6.6))
+    plot_routes(inst, res.initial_best_routes, axes[0], title="Начальное поколение (лучшая особь)",
+                legend="below", annotate=False)
+    plot_routes(inst, res.best_routes, axes[1], title="Итоговое решение ГА",
+                legend="below", annotate=False)
     fig.tight_layout()
     fig.savefig(RES / "exp5_routes.png")
     plt.close(fig)
@@ -257,7 +258,7 @@ def exp_params(pool, seeds):
                          "evals_mean": int(np.mean([r["evaluations"] for r in rs]))})
     write_csv(RES / "exp4_params.csv", rows)
 
-    fig, axes = plt.subplots(2, 3, figsize=(15, 8))
+    fig, axes = plt.subplots(2, 3, figsize=(10.5, 7))
     for col, (p, vals) in enumerate(PARAM_GRID.items()):
         ax = axes[0, col]
         data = [[r["fitness"] for r in raw if r["param"] == p and r["value"] == v] for v in vals]
@@ -270,7 +271,7 @@ def exp_params(pool, seeds):
                        color="#0b0b0b", zorder=3)
         ax.set_xticks(xs, [str(SEL_LABELS.get(v, v)) for v in vals])
         ax.set_title(PARAM_TITLES[p])
-        ax.set_ylabel("Итоговая приспособленность")
+        ax.set_ylabel("Итоговая f" if col else "Итоговая приспособленность")
         lo = min(min(d) for d in data)
         ax.set_ylim(max(0.0, lo - 0.1), None)
         ax.grid(axis="x", visible=False)
@@ -279,7 +280,7 @@ def exp_params(pool, seeds):
             hs = np.array([r["history"] for r in raw if r["param"] == p and r["value"] == v])
             ax2.plot(hs.mean(axis=0), color=PALETTE[i], lw=1.6, label=str(SEL_LABELS.get(v, v)))
         ax2.set_xlabel("Поколение")
-        ax2.set_ylabel("Средняя лучшая приспособленность")
+        ax2.set_ylabel("Средняя лучшая f")
         ax2.legend(fontsize=8)
     fig.tight_layout()
     fig.savefig(RES / "exp4_params.png")
@@ -327,7 +328,7 @@ def exp_trace(inst, ff, routes):
     for r, d in zip(eng.rules, tr.activations):
         lab = eng.output.terms[r.conclusion].label
         levels[lab] = max(levels.get(lab, 0.0), d)
-    fig, ax = plt.subplots(figsize=(8, 3.8))
+    fig, ax = plt.subplots(figsize=(7.4, 3.6))
     plot_inference(tr, eng, ax)
     fig.savefig(RES / "exp7_inference.png")
     plt.close(fig)

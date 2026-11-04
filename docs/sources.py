@@ -33,8 +33,6 @@ SOURCES = {
                "С. Д. Штовба. – М. : Горячая линия – Телеком, 2007. – 288 с.",
     "pegat": "Пегат, А. Нечеткое моделирование и управление / А. Пегат ; пер. с англ. – М. : "
              "БИНОМ. Лаборатория знаний, 2009. – 798 с.",
-    "russell": "Рассел, С. Искусственный интеллект: современный подход / С. Рассел, "
-               "П. Норвиг ; пер. с англ. – 2-е изд. – М. : Вильямс, 2006. – 1408 с.",
     "holland": "Holland, J. H. Adaptation in Natural and Artificial Systems / J. H. Holland. – "
                "Ann Arbor : University of Michigan Press, 1975. – 183 p.",
     "goldberg": "Goldberg, D. E. Genetic Algorithms in Search, Optimization, and Machine "
@@ -50,9 +48,6 @@ SOURCES = {
     # --- задача маршрутизации транспорта
     "dantzig": "Dantzig, G. B. The truck dispatching problem / G. B. Dantzig, J. H. Ramser // "
                "Management Science. – 1959. – Vol. 6, № 1. – P. 80–91.",
-    "clarke": "Clarke, G. Scheduling of vehicles from a central depot to a number of delivery "
-              "points / G. Clarke, J. W. Wright // Operations Research. – 1964. – Vol. 12, "
-              "№ 4. – P. 568–581.",
     "solomon": "Solomon, M. M. Algorithms for the vehicle routing and scheduling problems with "
                "time window constraints / M. M. Solomon // Operations Research. – 1987. – "
                "Vol. 35, № 2. – P. 254–265.",
@@ -64,9 +59,4 @@ SOURCES = {
     "prins": "Prins, C. A simple and effective evolutionary algorithm for the vehicle routing "
              "problem / C. Prins // Computers & Operations Research. – 2004. – Vol. 31, "
              "№ 12. – P. 1985–2002.",
-    # --- программные средства
-    "python": "Python 3 Documentation [Электронный ресурс] / Python Software Foundation. – "
-              f"Режим доступа: https://docs.python.org/3/ (дата обращения: {ACCESS}).",
-    "numpy": "NumPy Documentation [Электронный ресурс] / NumPy Developers. – Режим доступа: "
-             f"https://numpy.org/doc/stable/ (дата обращения: {ACCESS}).",
 }

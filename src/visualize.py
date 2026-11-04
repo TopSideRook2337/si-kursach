@@ -36,7 +36,7 @@ URGENCY_MARKERS = {1: ("o", "обычный"), 2: ("D", "повышенный"),
 
 
 def plot_routes(inst: Instance, routes: list[list[int]], ax=None, title: str | None = None,
-                annotate: bool = True):
+                annotate: bool = True, legend: str = "right"):
     """Карта маршрутов: склад — чёрный квадрат, клиенты — маркер по срочности,
     маршрут каждой машины — свой цвет, опоздавшие клиенты обведены красным."""
     if ax is None:
@@ -80,7 +80,11 @@ def plot_routes(inst: Instance, routes: list[list[int]], ax=None, title: str | N
                 Line2D([], [], marker="o", ls="", mfc="none", mec="#e34948", ms=11, mew=1.6)]
     labels += ["склад", "обычный заказ", "повышенная срочность", "срочный заказ",
                "опоздание"]
-    ax.legend(handles, labels, fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0))
+    if legend == "right":
+        ax.legend(handles, labels, fontsize=7, loc="upper left", bbox_to_anchor=(1.01, 1.0))
+    elif legend == "below":
+        ax.legend(handles, labels, fontsize=8, loc="upper center", bbox_to_anchor=(0.5, -0.13),
+                  ncol=2)
     ax.set_aspect("equal", adjustable="box")
     ax.set_xlabel("x, км")
     ax.set_ylabel("y, км")
@@ -125,7 +129,7 @@ def plot_membership(var, ax=None, value: float | None = None):
 
 def plot_all_memberships(engine, path=None):
     """Все входные и выходная переменные на одном рисунке (сетка 3×2)."""
-    fig, axes = plt.subplots(3, 2, figsize=(12, 9))
+    fig, axes = plt.subplots(3, 2, figsize=(9, 7.6))
     vars_ = list(engine.inputs.values()) + [engine.output]
     for ax, v in zip(axes.flat, vars_):
         plot_membership(v, ax)

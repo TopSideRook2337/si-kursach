@@ -70,8 +70,9 @@ class FuzzyFitness:
         from src.ga.encoding import decode
         key = tuple(chrom)
         val = self.cache.get(key)
-        if val is None:
+        if val is None:                    # особь ещё не оценивалась
             self.evaluations += 1
+            # хромосома → маршруты → метрики → нечёткий вывод Мамдани − штраф
             val = self.score(decode(chrom, self.inst.n_clients))
             self.cache[key] = val
         return val

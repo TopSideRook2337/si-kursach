@@ -4,9 +4,9 @@
     python docs/build_report.py --no-pdf   # только docx (содержание без номеров страниц)
 
 Текст разделов хранится в docs/sections/*.md в простой разметке:
-    #* ЗАГОЛОВОК           — структурный элемент (по центру, с новой страницы)
+    #* Заголовок           — структурный элемент (по центру, с новой страницы)
     # 1 Заголовок          — раздел (с новой страницы); ## 1.1, ### 1.1.1 — подразделы
-    #A А | обязательное | Название   — приложение
+    #A А | Название        — приложение
     - текст                — элемент перечисления (с тире)
     !fig id | путь | ширина_см | Название
     !table id | Название | gen:имя       — таблица из результатов экспериментов
@@ -26,6 +26,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import ast
 import csv
 import json
@@ -45,6 +46,7 @@ sys.path.insert(0, str(DOCS))
 
 from docx import Document  # noqa: E402
 from docx.enum.section import WD_SECTION  # noqa: E402
+from docx.enum.style import WD_STYLE_TYPE  # noqa: E402
 from docx.enum.table import WD_TABLE_ALIGNMENT  # noqa: E402
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK, WD_TAB_ALIGNMENT  # noqa: E402
 from docx.enum.text import WD_TAB_LEADER  # noqa: E402
@@ -67,6 +69,8 @@ NS_W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 SECTION_FILES = ["00_introduction.md", "01_normative.md", "02_terms.md", "1_analysis.md",
                  "2_methods.md", "3_system.md", "4_experiments.md", "9_conclusion.md"]
 APPENDIX_FILE = "a_appendices.md"
+TITLE_TEMPLATE = DOCS / "title_template.docx"   # готовые титульный лист и задание (бланк студента)
+TOC_LEVELS = 2                                 # в содержание входят разделы и подразделы
 
 
 # ============================================================== вспомогательное
@@ -214,6 +218,39 @@ class ReportBuilder:
             hpf.space_after = Pt(12 if lvl == 1 else 6)
             hpf.keep_with_next = True
             hpf.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        # заголовок, не входящий в содержание (Реферат, Содержание): без уровня структуры,
+        # поэтому при обновлении поля TOC в Word он не попадает в содержание
+        hp = d.styles.add_style("Heading Plain", WD_STYLE_TYPE.PARAGRAPH)
+        hp.base_style = d.styles["Normal"]
+        hp.font.bold = True
+        hp.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        hp.paragraph_format.first_line_indent = Cm(0)
+        hp.paragraph_format.space_after = Pt(12)
+        hp.paragraph_format.keep_with_next = True
+        # строки содержания: те же стили использует Word при обновлении поля
+        for lvl, indent in ((1, 0.0), (2, 0.5)):
+            ts = d.styles.add_style(f"toc {lvl}", WD_STYLE_TYPE.PARAGRAPH)
+            ts.base_style = d.styles["Normal"]
+            tpf = ts.paragraph_format
+            tpf.first_line_indent = Cm(0)
+            tpf.left_indent = Cm(indent)
+            tpf.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            tpf.line_spacing = 1.15
+            tpf.space_after = Pt(0)
+            tpf.tab_stops.add_tab_stop(Cm(TEXT_WIDTH_CM), WD_TAB_ALIGNMENT.RIGHT, WD_TAB_LEADER.DOTS)
+        # абзацы бланка титула и задания: повторяет «Обычный» стиль бланка
+        # (Calibri 11, интервал 1,15, после абзаца 10 пт)
+        tf = d.styles.add_style("TitleForm", WD_STYLE_TYPE.PARAGRAPH)
+        tf.font.name = "Calibri"
+        tf.font.size = Pt(11)
+        tpf = tf.paragraph_format
+        tpf.first_line_indent = Cm(0)
+        tpf.left_indent = Cm(0)
+        tpf.alignment = WD_ALIGN_PARAGRAPH.LEFT
+        tpf.line_spacing = 1.15
+        tpf.space_before = Pt(0)
+        tpf.space_after = Pt(10)
+        tpf.widow_control = True
         # обновление полей (содержания) при открытии в Word
         settings = d.settings.element
         uf = OxmlElement("w:updateFields")
@@ -312,14 +349,21 @@ class ReportBuilder:
     def heading(self, text: str, level: int, structural=False, toc=True, new_page=None):
         if new_page is None:
             new_page = level == 1
-        h = self.doc.add_heading(level=level)
+        if toc:
+            h = self.doc.add_heading(level=level)
+        else:
+            h = self.doc.add_paragraph(style="Heading Plain")
         h.paragraph_format.page_break_before = new_page
         if structural:
             h.alignment = WD_ALIGN_PARAGRAPH.CENTER
             h.paragraph_format.first_line_indent = Cm(0)
-        h.add_run(text)
+        parts = text.split("\n")          # «\n» — перенос строки внутри заголовка
+        for i, part in enumerate(parts):
+            if i:
+                h.add_run().add_break()
+            h.add_run(part)
         if toc:
-            self.headings.append((level, text))
+            self.headings.append((level, " ".join(parts)))
         return h
 
     # --------------------------------------------------------------- объекты
@@ -501,12 +545,8 @@ class ReportBuilder:
         if line.startswith("#*"):
             self.heading(line[2:].strip(), 1, structural=True)
         elif line.startswith("#A"):
-            letter, kind, title = [x.strip() for x in line[2:].split("|")]
-            h = self.heading(f"ПРИЛОЖЕНИЕ {letter}", 1, structural=True, toc=False)
-            h.paragraph_format.space_after = Pt(0)
-            self.headings.append((1, f"Приложение {letter} {title}"))
-            self.para(f"({kind})", align=WD_ALIGN_PARAGRAPH.CENTER, indent=0)
-            self.para(title, align=WD_ALIGN_PARAGRAPH.CENTER, indent=0, bold=True, space_after=12)
+            letter, title = [x.strip() for x in line[2:].split("|")]
+            self.heading(f"Приложение {letter}\n{title}", 1, structural=True)
         else:
             level = len(line) - len(line.lstrip("#"))
             self.heading(line[level:].strip(), level)
@@ -560,93 +600,45 @@ class ReportBuilder:
             raise ValueError(f"Неизвестная директива: {line}")
 
     # ----------------------------------------------- титул, задание, реферат
-    def title_page(self):
-        c = WD_ALIGN_PARAGRAPH.CENTER
-        L = WD_ALIGN_PARAGRAPH.LEFT
-        P = dict(indent=0, spacing=1.0)
-        self.para("Министерство науки и высшего образования Российской Федерации", c, **P)
-        self.para("ФГБОУ ВО «Кубанский государственный технологический университет»", c, **P)
-        self.para("(ФГБОУ ВО «КубГТУ»)", c, **P, space_after=18)
-        self.para("Институт [наименование института]", L, **P, space_after=4)
-        self.para("Кафедра информационных систем и программирования", L, **P, space_after=4)
-        self.para("Направление подготовки 09.03.04 Программная инженерия", L, **P, space_after=4)
-        self.para("Профиль [наименование профиля]", L, **P, space_after=40)
-        self.para("КУРСОВАЯ РАБОТА", c, **P, bold=True, size=16, space_after=18)
-        self.para("по дисциплине «Системы искусственного интеллекта»", c, **P, space_after=12)
-        self.para("на тему: «Разработка гибридной интеллектуальной системы планирования "
-                  "маршрутов доставки на основе генетического алгоритма и нечёткой логики»",
-                  c, **P, bold=True, space_after=30)
-        self.para("Выполнил(-а) студент(-ка) [курс] курса [группа] группы", L, **P, space_after=2)
-        self.para("[Фамилия Имя Отчество]", L, **P, space_after=16)
-        self.para("Допущен к защите ____________________________", L, **P, space_after=16)
-        self.para("Руководитель (нормоконтролёр) работы", L, **P, space_after=2)
-        self.para("[должность] ______________________ [Фамилия И.О.]", L, **P, space_after=16)
-        self.para("Защищен ___________________   Оценка ___________________", L, **P,
-                  space_after=16)
-        self.para("Члены комиссии ____________________________________________", L, **P,
-                  space_after=6)
-        for _ in range(2):
-            self.para("                           ____________________________________________",
-                      L, **P, space_after=6)
-        self.para("(подпись, дата, расшифровка подписи)", c, **P, size=11, space_after=30)
-        self.para("Краснодар", c, **P)
-        self.para("2026 г.", c, **P)
+    def front_pages(self):
+        """Титульный лист и задание — готовый бланк docs/title_template.docx без изменений.
 
-    def task_page(self):
-        c = WD_ALIGN_PARAGRAPH.CENTER
-        L = WD_ALIGN_PARAGRAPH.LEFT
-        R = WD_ALIGN_PARAGRAPH.RIGHT
-        P = dict(indent=0, spacing=1.0, size=13)
-        self.page_break()
-        self.para("ФГБОУ ВО «Кубанский государственный технологический университет»", c, **P)
-        self.para("(ФГБОУ ВО «КубГТУ»)", c, **P, space_after=6)
-        self.para("Институт [наименование института]", L, **P)
-        self.para("Кафедра информационных систем и программирования", L, **P)
-        self.para("Направление подготовки 09.03.04 Программная инженерия", L, **P)
-        self.para("Профиль [наименование профиля]", L, **P, space_after=6)
-        self.para("УТВЕРЖДАЮ", R, **P)
-        self.para("Зав. кафедрой ________________", R, **P)
-        self.para("«___» ____________ 20__ г.", R, **P, space_after=6)
-        self.para("ЗАДАНИЕ", c, **P, bold=True)
-        self.para("на курсовую работу", c, **P, space_after=6)
-        self.para("Студенту(-ке) [Фамилия И.О.] [курс] курса группы [группа]", L, **P)
-        self.para("Тема работы: «Разработка гибридной интеллектуальной системы планирования "
-                  "маршрутов доставки на основе генетического алгоритма и нечёткой логики»",
-                  WD_ALIGN_PARAGRAPH.JUSTIFY, **P)
-        self.para("(утверждена указанием директора института № ___ от ________ 20__ г.)",
-                  L, indent=0, spacing=1.0, size=11, space_after=4)
-        self.para("План работы:", L, **P)
-        plan = ["1. Анализ проблем предметной области: задача маршрутизации транспорта с "
-                "ограничениями вместимости и временными окнами, критерии качества плана доставки.",
-                "2. Выбор и обоснование интеллектуальных методов: генетический алгоритм и "
-                "нечёткий логический вывод Мамдани; гибридная схема их взаимодействия.",
-                "3. Разработка интеллектуальной системы (программная реализация на Python) и "
-                "экспериментальный анализ её работы."]
-        for s in plan:
-            self.para(s, WD_ALIGN_PARAGRAPH.JUSTIFY, **P)
-        pages = self.stats.get("body_pages", "__")
-        self.para("Объём работы:", L, **P, space_before=4)
-        self.para(f"а) пояснительная записка {pages} с.;", L, **P)
-        self.para("б) иллюстративная часть ______ лист(-ов).", L, **P, space_after=4)
-        self.para("Рекомендуемая литература:", L, **P)
-        for k in ("jones", "rutkovskaya", "gladkov"):
-            self.para(f"{('jones', 'rutkovskaya', 'gladkov').index(k) + 1}. "
-                      f"{SOURCES[k]}", WD_ALIGN_PARAGRAPH.JUSTIFY, indent=0, spacing=1.0,
-                      size=12)
-        self.para("Срок выполнения работы: с «___» ________ по «___» ________ 20__ г.", L, **P,
-                  space_before=4)
-        self.para("Срок защиты: «___» ____________ 20__ г.", L, **P)
-        self.para("Дата выдачи задания: «___» ____________ 20__ г.", L, **P)
-        self.para("Дата сдачи работы на кафедру: «___» ____________ 20__ г.", L, **P,
-                  space_after=8)
-        self.para("Руководитель работы ____________________ [Фамилия И.О.]", L, **P)
-        self.para("(должность, подпись)", L, indent=0, spacing=1.0, size=11, space_after=6)
-        self.para("Задание принял студент ____________________ [Фамилия И.О.]", L, **P)
-        self.para("(подпись)", L, indent=0, spacing=1.0, size=11)
+        Абзацы и таблица бланка переносятся в начало записки; разрыв раздела после
+        титула сохраняется (без колонтитулов бланка и без сброса нумерации страниц),
+        поэтому на титуле и задании номер не печатается, а счёт страниц сквозной."""
+        tpl = Document(str(TITLE_TEMPLATE))
+        body = self.doc.element.body
+        anchor = body.find(qn("w:sectPr"))
+        for el in list(tpl.element.body):
+            if el.tag == qn("w:sectPr"):
+                continue
+            el = copy.deepcopy(el)
+            # белый прямоугольник бланка, закрывавший номер страницы, не нужен
+            mc = "{http://schemas.openxmlformats.org/markup-compatibility/2006}AlternateContent"
+            for ac in list(el.iter(mc)):
+                ac.getparent().remove(ac)
+            for p in el.iter(qn("w:p")):
+                ppr = p.find(qn("w:pPr"))
+                if ppr is None:
+                    ppr = OxmlElement("w:pPr")
+                    p.insert(0, ppr)
+                ps = ppr.find(qn("w:pStyle"))
+                if ps is None:
+                    ps = OxmlElement("w:pStyle")
+                    ppr.insert(0, ps)
+                ps.set(qn("w:val"), "TitleForm")
+                sect = ppr.find(qn("w:sectPr"))
+                if sect is not None:
+                    for ref in sect.findall(qn("w:headerReference")) + sect.findall(qn("w:footerReference")):
+                        sect.remove(ref)
+                    num = sect.find(qn("w:pgNumType"))
+                    if num is not None:
+                        sect.remove(num)
+            anchor.addprevious(el)
 
     def abstract(self):
         s = self.stats
-        self.heading("РЕФЕРАТ", 1, structural=True, toc=False)
+        self.heading("Реферат", 1, structural=True, toc=False)
         self.para(f"Курсовая работа: {s.get('pages', '__')} с., {s.get('figs', '__')} рис., "
                   f"{s.get('tables', '__')} табл., {s.get('sources', '__')} источников, "
                   f"{s.get('apps', '__')} приложения.")
@@ -658,21 +650,14 @@ class ReportBuilder:
 
     def toc(self):
         """Содержание: поле TOC с заранее заполненным результатом."""
-        self.heading("СОДЕРЖАНИЕ", 1, structural=True, toc=False)
-        entries = self.toc_entries or [(1, "Содержание будет заполнено при обновлении поля")]
+        self.heading("Содержание", 1, structural=True, toc=False)
+        entries = [e for e in (self.toc_entries or [(1, "Содержание будет заполнено при обновлении поля")])
+                   if e[0] <= TOC_LEVELS]
         first = True
         for idx, (level, text) in enumerate(entries):
-            p = self.doc.add_paragraph()
-            pf = p.paragraph_format
-            pf.first_line_indent = Cm(0)
-            pf.left_indent = Cm(0.5 * (level - 1))
-            pf.alignment = WD_ALIGN_PARAGRAPH.LEFT
-            pf.line_spacing = 1.0
-            pf.space_after = Pt(0)
-            pf.tab_stops.add_tab_stop(Cm(TEXT_WIDTH_CM), WD_TAB_ALIGNMENT.RIGHT,
-                                      WD_TAB_LEADER.DOTS)
+            p = self.doc.add_paragraph(style=f"toc {level}")
             if first:
-                for kind, txt in (("begin", None), ("instr", 'TOC \\o "1-3" \\h \\z \\u'),
+                for kind, txt in (("begin", None), ("instr", f'TOC \\o "1-{TOC_LEVELS}" \\h \\z \\u'),
                                   ("separate", None)):
                     run = p.add_run()
                     if kind == "instr":
@@ -693,7 +678,7 @@ class ReportBuilder:
                 run._r.append(el)
 
     def sources(self):
-        self.heading("СПИСОК ИСПОЛЬЗОВАННЫХ ИСТОЧНИКОВ", 1, structural=True)
+        self.heading("Список использованных источников", 1, structural=True)
         for i, k in enumerate(self.cited, 1):
             p = self.para(f"{i}. {SOURCES[k]}")
             p.paragraph_format.first_line_indent = Cm(1.25)
@@ -705,8 +690,7 @@ class ReportBuilder:
     def build(self, toc_entries=None):
         self.toc_entries = toc_entries
         self.prescan(SECTION_FILES + [APPENDIX_FILE])
-        self.title_page()
-        self.task_page()
+        self.front_pages()
         self.abstract()
         self.toc()
         for f in SECTION_FILES:

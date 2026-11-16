@@ -66,11 +66,11 @@ OUT_PDF = DOCS / "Пояснительная_записка.pdf"
 NS_M = "http://schemas.openxmlformats.org/officeDocument/2006/math"
 NS_W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 
-SECTION_FILES = ["00_introduction.md", "01_normative.md", "02_terms.md", "1_analysis.md",
+SECTION_FILES = ["00_introduction.md", "01_normative.md", "1_analysis.md",
                  "2_methods.md", "3_system.md", "4_experiments.md", "9_conclusion.md"]
 APPENDIX_FILE = "a_appendices.md"
 TITLE_TEMPLATE = DOCS / "title_template.docx"   # готовые титульный лист и задание (бланк студента)
-TOC_LEVELS = 2                                 # в содержание входят разделы и подразделы
+TOC_LEVELS = 3                                 # в содержание входят разделы, подразделы и пункты
 
 
 # ============================================================== вспомогательное
@@ -228,7 +228,7 @@ class ReportBuilder:
         hp.paragraph_format.space_after = Pt(12)
         hp.paragraph_format.keep_with_next = True
         # строки содержания: те же стили использует Word при обновлении поля
-        for lvl, indent in ((1, 0.0), (2, 0.5)):
+        for lvl, indent in ((1, 0.0), (2, 0.5), (3, 1.0)):
             ts = d.styles.add_style(f"toc {lvl}", WD_STYLE_TYPE.PARAGRAPH)
             ts.base_style = d.styles["Normal"]
             tpf = ts.paragraph_format
@@ -328,9 +328,8 @@ class ReportBuilder:
                 if k not in self.cited:
                     self.cited.append(k)
                 nums.append(f"{self.cited.index(k) + 1}{', ' + page if page else ''}")
-            return "[" + "; ".join(nums) + "]" if any("," in n for n in nums) else \
-                "[" + ", ".join(nums) + "]"
-        text = re.sub(r"\[(@[^\]]+)\]", cite, text)
+            return ""                     # ссылки в тексте не печатаются
+        text = re.sub(r"\s*\[(@[^\]]+)\]", cite, text)
         text = re.sub(r"\{\{(\w+)\}\}", lambda m: str(self.values[m.group(1)]), text)
 
         def ref(m):
@@ -409,7 +408,7 @@ class ReportBuilder:
                     a = (align[j] if align else "l")
                     p.alignment = {"l": WD_ALIGN_PARAGRAPH.LEFT, "c": WD_ALIGN_PARAGRAPH.CENTER,
                                    "r": WD_ALIGN_PARAGRAPH.RIGHT}[a]
-                self.inline(p, str(val), bold=(i == 0), size=font)
+                self.inline(p, str(val), size=12)
         repeat_header(tb.rows[0])
         set_col_widths(tb, widths)
         # пустой абзац после таблицы
@@ -433,7 +432,7 @@ class ReportBuilder:
                 self.inline(p, ("" if j == 0 else "– ") + val)
         set_col_widths(tb, [w * scale for w in widths])
 
-    def listing(self, label, caption, code: str, size=9):
+    def listing(self, label, caption, code: str, size=10):
         n = self.labels[f"lst:{label}"]
         self.para(f"Листинг {n} – {caption}", align=WD_ALIGN_PARAGRAPH.LEFT, indent=0,
                   keep_next=True, space_before=6)
@@ -441,25 +440,21 @@ class ReportBuilder:
         self.para("", spacing=1.0)
 
     def code_block(self, code: str, size=10):
-        tb = self.doc.add_table(rows=1, cols=1)
-        set_table_borders(tb)
-        cell = tb.rows[0].cells[0]
-        cell.width = Cm(TEXT_WIDTH_CM)
-        set_cell_margins(cell, 60, 60, 120, 60)
+        """Код без рамки: Courier New, одинарный интервал, без отступа (как в записке по МПТ)."""
         lines = code.rstrip("\n").split("\n")
-        first = True
-        for line in lines:
-            p = cell.paragraphs[0] if first else cell.add_paragraph()
-            first = False
+        for i, line in enumerate(lines):
+            p = self.doc.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.LEFT
             pf = p.paragraph_format
             pf.first_line_indent = Cm(0)
             pf.line_spacing = 1.0
-            run = p.add_run(line if line else " ")
+            pf.space_after = Pt(0)
+            if len(lines) <= 25 and i < len(lines) - 1:
+                pf.keep_with_next = True   # короткий листинг не разрывается
+            run = p.add_run(line.replace("\t", "    ") if line else " ")
             run.font.name = MONO
             run.font.size = Pt(size)
             run._r.get_or_add_rPr().get_or_add_rFonts().set(qn("w:hAnsi"), MONO)
-        set_col_widths(tb, [TEXT_WIDTH_CM])
 
     def equation(self, label, name):
         n = self.labels[f"eq:{label}"]
@@ -584,7 +579,7 @@ class ReportBuilder:
             num, caption, path = args[0], args[1], args[2]
             self.para(f"Листинг {num} – {caption}", align=WD_ALIGN_PARAGRAPH.LEFT, indent=0,
                       keep_next=True, space_before=6)
-            self.code_block(tables.appendix_code(path), 8)
+            self.code_block(tables.appendix_code(path), 9.5)
             self.para("", spacing=1.0)
         elif cmd == "appfig":
             num, path, width, caption = args

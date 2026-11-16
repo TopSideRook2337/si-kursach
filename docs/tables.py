@@ -118,9 +118,9 @@ def gen_compare(b):
                      f(r["overload_mean"], 1), f(r["balance_mean"], 2), f(r["urgency_mean"], 2),
                      f(r["quality_mean"], 3) + " ± " + f(r["quality_std"], 3),
                      f(r["time_mean"], 2)])
-    return {"header": ["N", "Метод", "Пробег, км", "Число опозданий", "Опоздание, мин",
-                       "Перегруз", "B", "U", "Оценка Q", "Время, с"],
-            "rows": rows, "widths": [0.9, 3.1, 2.0, 1.6, 1.7, 1.4, 1.0, 1.0, 2.2, 1.3],
+    return {"header": ["N", "Метод", "Пробег, км", "Число опозда­ний", "Опозда­ние, мин",
+                       "Пере­груз", "B", "U", "Оценка Q", "Вре­мя, с"],
+            "rows": rows, "widths": [0.8, 2.6, 2.0, 1.6, 1.6, 1.3, 1.3, 1.3, 2.4, 1.3],
             "font": 10, "align": "clcccccccc"}
 
 
@@ -131,9 +131,9 @@ def gen_brute(b):
                      f(r["brute_time"], 2), f(r["ga_mean"], 4), f(r["ga_min"], 4),
                      f(100 * float(r["ga_hit_rate"]), 0), f(r["ga_gap_pct"], 1), r["ga_evals"],
                      f(r["ga_time"], 2)])
-    return {"header": ["N", "Число решений", "Оптимум f*", "Время перебора, с",
-                       "ГА: средняя f", "ГА: худшая f", "Найден оптимум, %",
-                       "Отставание, %", "Уникальных оценок ГА", "Время ГА, с"],
+    return {"header": ["N", "Число реше­ний", "Опти­мум f*", "Время пере­бора, с",
+                       "ГА: сред­няя f", "ГА: худ­шая f", "Найден опти­мум, %",
+                       "Отста­вание, %", "Уни­каль­ных оценок ГА", "Время ГА, с"],
             "rows": rows, "font": 10, "align": "cccccccccc",
             "widths": [0.8, 1.8, 1.6, 1.7, 1.6, 1.6, 1.7, 1.6, 1.9, 1.4]}
 
@@ -171,7 +171,7 @@ def gen_fired(b):
         conds = conds.replace(".", ",")
         rows.append([f"П{r['rule']}", conds, f(r["c"], 3), f(r["F"], 1), f(r["d"], 3),
                      r["conclusion"]])
-    return {"header": ["Правило", "Подусловия и их степени истинности b",
+    return {"header": ["Пра­ви­ло", "Подусловия и их степени истинности b",
                        "c = min b", "F", "d = c·F", "Заключение (терм «Качества»)"],
             "rows": rows, "widths": [1.7, 6.8, 1.6, 1.0, 1.6, 3.0], "font": 10,
             "align": "clcccl"}
@@ -213,7 +213,7 @@ def gen_variables(b):
             terms.append(f"«{t.label}» – {kind}({'; '.join(f(p, 2) for p in t.mf.params)})")
         lo, hi = v.universe
         rows.append([f"{v.title} ({sym[v.name]})", f"[{f(lo, 1)}; {f(hi, 1)}]", "; ".join(terms)])
-    return {"header": ["Переменная", "Универсум", "Термы и параметры функций принадлежности"],
+    return {"header": ["Переменная", "Уни­вер­сум", "Термы и параметры функций принадлежности"],
             "rows": rows, "widths": [4.2, 2.3, 10.0], "font": 11, "align": "lcl"}
 
 
